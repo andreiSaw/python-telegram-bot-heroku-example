@@ -1,6 +1,6 @@
 FROM python:3.7
 
-RUN pip install python-telegram-bot
+RUN pip install -r requirements.txt --no-cache-dir
 
 RUN mkdir /app
 ADD . /app

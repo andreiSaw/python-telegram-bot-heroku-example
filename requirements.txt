@@ -1,2 +1,3 @@
 python-telegram-bot
 BeautifulSoup4
+requests
