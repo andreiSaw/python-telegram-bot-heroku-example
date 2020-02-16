@@ -24,6 +24,8 @@ elif back._MODE == "prod":
                               port=PORT,
                               url_path=back._TOKEN)
         updater.bot.set_webhook("https://{}.herokuapp.com/{}".format(HEROKU_APP_NAME, back._TOKEN))
+        updater.idle()
+
 else:
     logger.error("No MODE specified!")
     sys.exit(1)
@@ -114,5 +116,4 @@ if __name__ == '__main__':
     dp.add_handler(CommandHandler('all', list_all))
     dp.add_handler(CommandHandler('clear', list_clear))
 
-    updater.start_polling()
-    updater.idle()
+    run(updater)
