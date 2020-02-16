@@ -1,0 +1,10 @@
+# docker-compose.yml
+version: '3.6'
+
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    command: ["python", "-u", "/app/bot.py"]
+    volumes:
+      - ./data.db:/app/data.db
