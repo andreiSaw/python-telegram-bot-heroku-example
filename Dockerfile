@@ -1,8 +1,10 @@
 FROM python:3.7-slim
 
-ENV MODE=$MODE
-COPY requirements.txt .
-RUN pip install -r requirements.txt && rm -rf /root/.cache
+COPY requirements.txt /tmp
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
+RUN mkdir /app
 ADD . /app
-CMD python3 /app/bot.py
+WORKDIR /app
+
+CMD python /app/bot.py

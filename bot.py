@@ -37,7 +37,7 @@ def start_handler(update: Update, context: CallbackContext):
     update.message.reply_text("Hi there!")
 
 
-def random_handler(update: Update, context: CallbackContext):
+def get_one_msg(update: Update, context: CallbackContext):
     the_link = "https://www.horoscope.com/us/horoscopes/general/horoscope-general-daily-today.aspx?sign=8"
     logger.info("User {} got horoscope {}".format(update.effective_user["id"], the_link))
     msg = back.get_data(the_link)
@@ -45,7 +45,13 @@ def random_handler(update: Update, context: CallbackContext):
     update.message.reply_text("Your horoscope for today: {}".format(msg))
 
 
-def callback_alarm(bot, job):
+def stop_daily(update: Update, context: CallbackContext):
+    context.job_queue.stop()
+    context.bot.send_message(chat_id=update.message.chat_id,
+                             text="Your schedule has been cleared 🧼")
+
+
+def daily_alarm_callback(bot, job):
     the_link = "https://www.horoscope.com/us/horoscopes/general/horoscope-general-daily-today.aspx?sign=8"
     logger.info("Send to chat {}".format(job.context))
     msg = back.get_data(the_link)
@@ -57,8 +63,8 @@ def callback_alarm(bot, job):
 def callback_timer(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.message.chat_id,
                              text='Daily reminder has been set! You\'ll get notified at 8 AM daily GMT+3')
-    datetime_obj_naive = time(hour=11, minute=8, second=10)
-    context.job_queue.run_daily(callback_alarm,
+    datetime_obj_naive = time(hour=5, minute=0, second=0)
+    context.job_queue.run_daily(daily_alarm_callback,
                                 days=(0, 1, 2, 3, 4, 5, 6),
                                 context=update.message.chat_id,
                                 time=datetime_obj_naive
@@ -107,13 +113,14 @@ if __name__ == '__main__':
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('ping', pong))
     dp.add_handler(CommandHandler("start", start_handler))
-    dp.add_handler(CommandHandler("get", random_handler))
+    dp.add_handler(CommandHandler("get", get_one_msg))
     timer_handler = CommandHandler('schedule', callback_timer, pass_job_queue=True)
     dp.add_handler(timer_handler)
+    dp.add_handler(CommandHandler('stop_schedule', stop_daily, pass_job_queue=True))
 
-    dp.add_handler(CommandHandler('add', list_add))
-    dp.add_handler(CommandHandler('delete', list_delete))
-    dp.add_handler(CommandHandler('all', list_all))
-    dp.add_handler(CommandHandler('clear', list_clear))
+    # dp.add_handler(CommandHandler('add', list_add))
+    # dp.add_handler(CommandHandler('delete', list_delete))
+    # dp.add_handler(CommandHandler('all', list_all))
+    # dp.add_handler(CommandHandler('clear', list_clear))
 
     run(updater)
